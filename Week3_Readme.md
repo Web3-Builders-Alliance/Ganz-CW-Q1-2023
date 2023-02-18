@@ -1,10 +1,14 @@
-# WBA CosmWasm Week 1
+# WBA CosmWasm Week 3
 
-Add this funcionality to Counter contract
-- Decrement
-- IncrementBy
-- DecrementBy
-- ReflectFunds
+Was not able to succesfully compile week 2 or 3 contracts yet.
+
+So I deployed Counter contract instead.
+
+`terrad keys add wsl_wba`
+
+`terrad tx wasm store artifacts/a1.wasm --from wsl_wba $TXFLAG -y --output json -b block`
+
+code id was 7646
 
 
 ## Code Journal Questions
@@ -19,8 +23,8 @@ Add this funcionality to Counter contract
 
 3. *What is the contract doing? What is the mechanism?*
 
-- Its a Counter contract, with ability to increment, decrement by values, and reset counter.
+- Its a 
 
-- This is done by sending messages to modify the state.
+- This is done by 
 
 4. *How could it be better? More efficient? Safer?*
