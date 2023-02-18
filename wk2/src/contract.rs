@@ -19,7 +19,7 @@ pub fn instantiate(
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     let state = State {
-        count: msg.count,
+        tokens: msg.tokens,
         owner: info.sender.clone(),
     };
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
@@ -28,7 +28,7 @@ pub fn instantiate(
     Ok(Response::new()
         .add_attribute("method", "instantiate")
         .add_attribute("owner", info.sender)
-        .add_attribute("count", msg.count.to_string()))
+        .add_attribute("tokens", msg.tokens.to_string()))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -39,32 +39,28 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::Increment {} => execute::increment(deps),
-        ExecuteMsg::Reset { count } => execute::reset(deps, info, count),
+        // ExecuteMsg::StoreTokens {} => execute::store_tokens(deps),
+        ExecuteMsg::ForwardTokens { receiver } => execute::forward_tokens(deps, receiver),
     }
 }
 
 pub mod execute {
     use super::*;
 
-    pub fn increment(deps: DepsMut) -> Result<Response, ContractError> {
-        STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
-            state.count += 1;
-            Ok(state)
-        })?;
 
-        Ok(Response::new().add_attribute("action", "increment"))
+    pub fn forward_tokens(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Response, ContractError> {
+        // STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
+        //     if info.sender != state.owner {
+        //         return Err(ContractError::Unauthorized {});
+        //     }
+        //     state.count = count;
+        //     Ok(state)
+        // })?;
+        Ok(Response::new().add_attribute("action", "forward_tokens"))
     }
 
-    pub fn reset(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Response, ContractError> {
-        STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
-            if info.sender != state.owner {
-                return Err(ContractError::Unauthorized {});
-            }
-            state.count = count;
-            Ok(state)
-        })?;
-        Ok(Response::new().add_attribute("action", "reset"))
+    pub fn store_tokens(deps: DepsMut) -> Result<Response, ContractError> {
+        // Ok(Response::new().add_attribute("action", "store_tokens"))
     }
 }
 
