@@ -3,6 +3,7 @@ use cosmwasm_std::entry_point;
 use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
 use cw2::set_contract_version;
 
+use cosmwasm_std::{Addr, Uint128};
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, GetCountResponse, InstantiateMsg, QueryMsg};
 use crate::state::{State, STATE};
@@ -39,7 +40,7 @@ pub fn execute(
     msg: ExecuteMsg,
 ) -> Result<Response, ContractError> {
     match msg {
-        // ExecuteMsg::StoreTokens {} => execute::store_tokens(deps),
+        ExecuteMsg::StoreTokens {} => execute::store_tokens(deps),
         ExecuteMsg::ForwardTokens { receiver } => execute::forward_tokens(deps, receiver),
     }
 }
@@ -47,20 +48,29 @@ pub fn execute(
 pub mod execute {
     use super::*;
 
+    // forward tokens to receiver contract, 
+    // - On success, add amount forwarded to TOTAL_FORWARDED
+    pub fn forward_tokens(deps: DepsMut, info: MessageInfo, receiver: Addr, tokens_forwarded: Uint128) -> Result<Response, ContractError> {
+        CosmosMsg::Bank(BankMsg::Send {
+            to_address: receiver.into(),
+            amount: coins(tokens_forwarded, "uluna"),
+        })
 
-    pub fn forward_tokens(deps: DepsMut, info: MessageInfo, count: i32) -> Result<Response, ContractError> {
-        // STATE.update(deps.storage, |mut state| -> Result<_, ContractError> {
-        //     if info.sender != state.owner {
-        //         return Err(ContractError::Unauthorized {});
-        //     }
-        //     state.count = count;
-        //     Ok(state)
-        // })?;
+        // update TOTAL_FORWARDED
+        TOTAL_FORWARDED.update(deps.storage, |mut state| -> Result<_, ContractError> {
+            state.tokens += tokens_forwarded;
+            Ok(state)
+        })?;
         Ok(Response::new().add_attribute("action", "forward_tokens"))
     }
 
-    pub fn store_tokens(deps: DepsMut) -> Result<Response, ContractError> {
-        // Ok(Response::new().add_attribute("action", "store_tokens"))
+    // Anytime tokens received, add to TOTAL_RECEIVED
+    pub fn store_tokens(deps: DepsMut, tokens_received: Uint128) -> Result<Response, ContractError> {
+        TOTAL_RECEIVED.update(deps.storage, |mut state| -> Result<_, ContractError> {
+            state.tokens += tokens_received;
+            Ok(state)
+        })?;
+        Ok(Response::new().add_attribute("action", "store_tokens"))
     }
 }
 
