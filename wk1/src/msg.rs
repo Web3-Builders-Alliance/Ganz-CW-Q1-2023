@@ -1,4 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
+use cosmwasm_std::{Addr, Uint128};
 
 #[cw_serde]
 pub struct InstantiateMsg {
@@ -12,7 +13,7 @@ pub enum ExecuteMsg {
     Decrement {},
     IncrementBy{num: i32},
     DecrementBy{num: i32},
-    // ReflectFunds{amt: i128} 
+    ReflectFunds{amt: Uint128, address_to: Addr} 
 }
 
 #[cw_serde]

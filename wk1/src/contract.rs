@@ -1,7 +1,8 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
-use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult};
+use cosmwasm_std::{to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, BankMsg, coins};
 use cw2::set_contract_version;
+use cosmwasm_std::{Addr, Uint128};
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, GetCountResponse, InstantiateMsg, QueryMsg};
@@ -45,7 +46,7 @@ pub fn execute(
         ExecuteMsg::Decrement {  } => execute::decrement(deps),
         ExecuteMsg::IncrementBy { num } => execute::increment_by(deps, num) ,
         ExecuteMsg::DecrementBy { num } => execute::decrement_by(deps, num) ,
-        // ExecuteMsg::ReflectFunds {  } => _ ,
+        ExecuteMsg::ReflectFunds { amt, address_to } => execute::reflect_funds(deps, address_to, amt) ,
     }
 }
 
@@ -102,9 +103,15 @@ pub mod execute {
         Ok(Response::new().add_attribute("action", "increment_by"))
     }
 
-    // pub fn reflectFunds(deps: DepsMut, n: i32) -> Result<Response, ContractError> {
-    //     Ok(Response::new().add_attribute("action", "reflect_funds"))
-    // }
+    pub fn reflect_funds(deps: DepsMut, address_to: Addr, amt: Uint128) -> Result<Response, ContractError> {
+        Ok(Response::new()
+            .add_attribute("action", "reflect_funds")
+            .add_message(BankMsg::Send {
+                to_address: address_to.to_string(),
+                amount: coins(amt.into(), "uluna"),
+            })
+        )
+    }
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
