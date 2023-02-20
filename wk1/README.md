@@ -5,6 +5,8 @@ Add this funcionality to Counter contract
 - IncrementBy
 - DecrementBy
 - ReflectFunds
+    - send funds to an address, 
+    - set a callback to reflect the information (amount sent, address)
 
 
 ## Code Journal Questions
