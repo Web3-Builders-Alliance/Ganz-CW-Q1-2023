@@ -1,19 +1,21 @@
-# NFT Demo
+# CW721 NFT MVP
 
-## 
-```
-INIT='{"name":"Imgcoin","symbol":"IMG","decimals":6,"initial_balances":[{"address":"terra1f4nhaqvqfzrq0fwsccs7qp9rp5cwkqq7w2hk3g","amount":"10000"}],
-"mint":{"minter":"terra1f4nhaqvqfzrq0fwsccs7qp9rp5cwkqq7w2hk3g"},"marketing":{}}'
-```
+## env vars
+`export CHAIN_ID="pisco-1"`
 
-**TODO**
+`export DENOM="uluna"`
 
-```sh
-cargo 
+`export BINARY="terrad"`
 
-```
+`export RPC="https://terra-testnet-rpc.polkachu.com:443"`
 
+`export TXFLAG="--node $RPC --chain-id $CHAIN_ID --gas-prices 0.25$DENOM --gas auto --gas-adjustment 1.3 -y -b block --output json"`
 
+## build optimized
+`docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/rust-optimizer:0.12.9`
 
 **Xxx**
 
